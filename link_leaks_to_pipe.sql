@@ -34,16 +34,20 @@ ADD COLUMN IF NOT EXISTS geom_line_utm geometry(Geometry, 26910);
 
 UPDATE main
 SET geom_line_utm = ST_Transform(
-    ST_SetSRID(ST_GeomFromGeoJSON(geom::text), 4326),
+    ST_SetSRID(
+        ST_GeomFromGeoJSON((geom->'geometry')::text),
+        4326
+    ),
     26910
 )
 WHERE geom IS NOT NULL
   AND geom <> 'null'::jsonb
   AND jsonb_typeof(geom) = 'object'
-  AND geom->>'type' IS NOT NULL
-  AND geom->'coordinates' IS NOT NULL
+  AND geom->>'type' = 'Feature'
+  AND geom->'geometry' IS NOT NULL
+  AND geom->'geometry'->>'type' IS NOT NULL
+  AND geom->'geometry'->'coordinates' IS NOT NULL
   AND geom_line_utm IS NULL;
-
 
 -- ============================================================
 -- 2. ADD PROJECTED GEOMETRY TO LEAKDATA
