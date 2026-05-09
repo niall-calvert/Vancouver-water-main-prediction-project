@@ -21,6 +21,7 @@ TABLE_NAME = "final_model_data"
 
 MODEL_PATH = "catboost_leak_model.joblib"
 PREDICTIONS_CSV = "pipe_leak_predictions_2025_catboost.csv"
+PREDICTIONS_LINES_GEOJSON = "docs/predictions_catboost_lines.geojson"
 PREDICTIONS_JSON = "docs/predictions_catboost.json"
 
 
@@ -209,6 +210,97 @@ def export_predictions(df, model, threshold):
 
     print(f"\nSaved {PREDICTIONS_CSV}")
     print(f"Saved {PREDICTIONS_JSON}")
+
+    # ------------------------------------------------------------
+    # Export pipe-line GeoJSON for map visualization
+    # ------------------------------------------------------------
+    engine = create_engine(DB_URL)
+
+    pipe_geom_df = pd.read_sql(
+        """
+        SELECT
+            id AS pipe_id,
+            geom
+        FROM main
+        WHERE geom IS NOT NULL;
+        """,
+        engine,
+    )
+
+    map_df = scoring_df.merge(
+        pipe_geom_df,
+        on="pipe_id",
+        how="left",
+    )
+
+    # Optional: only export the highest-risk pipes to keep GitHub Pages fast.
+    map_df = map_df.head(5000).copy()
+
+    features = []
+
+    for _, row in map_df.iterrows():
+        geom = row["geom"]
+
+        if geom is None:
+            continue
+
+        # Depending on how pandas reads JSONB, geom may already be a dict
+        # or it may be a JSON string.
+        if isinstance(geom, str):
+            try:
+                geom = json.loads(geom)
+            except json.JSONDecodeError:
+                continue
+
+        # Your main.geom is a GeoJSON Feature:
+        # {
+        #   "type": "Feature",
+        #   "geometry": {"type": "LineString", "coordinates": [...]},
+        #   "properties": {}
+        # }
+        if isinstance(geom, dict) and geom.get("type") == "Feature":
+            geometry = geom.get("geometry")
+        else:
+            geometry = geom
+
+        if not geometry:
+            continue
+
+        feature = {
+            "type": "Feature",
+            "geometry": geometry,
+            "properties": {
+                "pipe_id": int(row["pipe_id"]),
+                "analysis_year": int(row["analysis_year"]),
+                "source_dataset": row["source_dataset"],
+                "diameter_mm": None if pd.isna(row["diameter_mm"]) else float(row["diameter_mm"]),
+                "installation_year": None if pd.isna(row["installation_year"]) else int(row["installation_year"]),
+                "lining_material": row["lining_material"],
+                "material": row["material"],
+                "pipe_age": None if pd.isna(row["pipe_age"]) else float(row["pipe_age"]),
+                "leaked_that_year": None if pd.isna(row["leaked_that_year"]) else int(row["leaked_that_year"]),
+                "leak_count_that_year": None if pd.isna(row["leak_count_that_year"]) else int(row["leak_count_that_year"]),
+                "years_since_last_leak": None if pd.isna(row["years_since_last_leak"]) else float(row["years_since_last_leak"]),
+                "most_recent_leak_year": None if pd.isna(row["most_recent_leak_year"]) else int(row["most_recent_leak_year"]),
+                "nearest_leak_distance_m": None if pd.isna(row["nearest_leak_distance_m"]) else float(row["nearest_leak_distance_m"]),
+                "average_leak_distance_m": None if pd.isna(row["average_leak_distance_m"]) else float(row["average_leak_distance_m"]),
+                "leak_probability_next_year": float(row["leak_probability_next_year"]),
+                "predicted_leak_next_year": int(row["predicted_leak_next_year"]),
+                "risk_rank": int(row["risk_rank"]),
+            },
+        }
+
+        features.append(feature)
+
+    geojson = {
+        "type": "FeatureCollection",
+        "features": features,
+    }
+
+    with open(PREDICTIONS_LINES_GEOJSON, "w", encoding="utf-8") as f:
+        json.dump(geojson, f)
+
+    print(f"Saved {PREDICTIONS_LINES_GEOJSON}")
 
     print("\n2025 scoring summary:")
     print(
