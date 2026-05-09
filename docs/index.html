@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Water Main Leak Risk Map</title>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+    }
+
+    #header {
+      padding: 14px 18px;
+      background: #111827;
+      color: white;
+      z-index: 1000;
+    }
+
+    #header h1 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    #header p {
+      margin: 5px 0 0;
+      color: #d1d5db;
+      font-size: 14px;
+    }
+
+    #map {
+      height: calc(100vh - 78px);
+      width: 100%;
+    }
+
+    .legend {
+      background: white;
+      padding: 10px 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+      line-height: 20px;
+      font-size: 13px;
+    }
+
+    .legend span {
+      display: inline-block;
+      width: 14px;
+      height: 4px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .info-box {
+      background: white;
+      padding: 10px 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+      font-size: 13px;
+      max-width: 260px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header">
+    <h1>Predicted Water Main Leak Risk</h1>
+    <p>Pipe-level model predictions for next-year leak risk</p>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    const map = L.map("map").setView([49.25, -123.12], 12);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap contributors"
+    }).addTo(map);
+
+    function getColor(probability) {
+      if (probability >= 0.50) return "#7f1d1d";
+      if (probability >= 0.25) return "#dc2626";
+      if (probability >= 0.10) return "#f97316";
+      if (probability >= 0.05) return "#eab308";
+      return "#22c55e";
+    }
+
+    function getWeight(probability) {
+      if (probability >= 0.50) return 6;
+      if (probability >= 0.25) return 5;
+      if (probability >= 0.10) return 4;
+      return 3;
+    }
+
+    function formatValue(value, fallback = "Unknown") {
+      if (value === null || value === undefined || value === "") {
+        return fallback;
+      }
+      return value;
+    }
+
+    function formatProbability(value) {
+      const probability = Number(value);
+      if (Number.isNaN(probability)) return "Unknown";
+      return (probability * 100).toFixed(2) + "%";
+    }
+
+    let pipeLayer;
+
+    fetch("predictions_catboost_lines.geojson")
+      .then(response => response.json())
+      .then(data => {
+        pipeLayer = L.geoJSON(data, {
+          style: function (feature) {
+            const probability = Number(feature.properties.leak_probability_next_year);
+
+            return {
+              color: getColor(probability),
+              weight: getWeight(probability),
+              opacity: 0.85
+            };
+          },
+
+          onEachFeature: function (feature, layer) {
+            const p = feature.properties;
+            const probability = Number(p.leak_probability_next_year);
+
+            layer.bindPopup(`
+              <strong>Pipe ID:</strong> ${formatValue(p.pipe_id)}<br>
+              <strong>Risk rank:</strong> ${formatValue(p.risk_rank)}<br>
+              <strong>Leak probability:</strong> ${formatProbability(probability)}<br>
+              <strong>Predicted leak:</strong> ${formatValue(p.predicted_leak_next_year)}<br>
+              <hr>
+              <strong>Material:</strong> ${formatValue(p.material)}<br>
+              <strong>Lining:</strong> ${formatValue(p.lining_material)}<br>
+              <strong>Diameter:</strong> ${formatValue(p.diameter_mm)} mm<br>
+              <strong>Install year:</strong> ${formatValue(p.installation_year)}<br>
+              <strong>Pipe age:</strong> ${formatValue(p.pipe_age)}<br>
+              <strong>Years since last leak:</strong> ${formatValue(p.years_since_last_leak, "No previous leak")}
+            `);
+
+            layer.on("mouseover", function () {
+              layer.setStyle({
+                weight: getWeight(probability) + 2,
+                opacity: 1
+              });
+            });
+
+            layer.on("mouseout", function () {
+              pipeLayer.resetStyle(layer);
+            });
+          }
+        }).addTo(map);
+
+        if (pipeLayer.getBounds().isValid()) {
+          map.fitBounds(pipeLayer.getBounds());
+        }
+      })
+      .catch(error => {
+        console.error("Could not load GeoJSON:", error);
+        alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
+      });
+
+    const legend = L.control({ position: "bottomright" });
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create("div", "legend");
+
+      div.innerHTML = `
+        <strong>Leak probability</strong><br>
+        <span style="background:#7f1d1d"></span> 50%+<br>
+        <span style="background:#dc2626"></span> 25–50%<br>
+        <span style="background:#f97316"></span> 10–25%<br>
+        <span style="background:#eab308"></span> 5–10%<br>
+        <span style="background:#22c55e"></span> &lt;5%
+      `;
+
+      return div;
+    };
+
+    legend.addTo(map);
+
+    const info = L.control({ position: "topright" });
+
+    info.onAdd = function () {
+      const div = L.DomUtil.create("div", "info-box");
+
+      div.innerHTML = `
+        <strong>Model output</strong><br>
+        Lines show pipe segments.<br>
+        Color shows predicted next-year leak risk.<br>
+        Click a pipe for details.
+      `;
+
+      return div;
+    };
+
+    info.addTo(map);
+  </script>
+</body>
+</html>
