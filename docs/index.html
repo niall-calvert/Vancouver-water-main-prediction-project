@@ -27,8 +27,8 @@
   --panel-soft: #323437;
   --text: #d1d0c5;
   --muted: #646669;
-  --accent: #e2b714;
-  --accent-soft: rgba(226, 183, 20, 0.14);
+  --accent: #38bdf8;
+  --accent-soft: rgba(14, 117, 161, 0.16);
   --error: #ca4754;
   --border: #3b3d40;
 }
@@ -114,6 +114,11 @@ body {
   overflow-y: auto;
   padding: 22px;
   min-height: 0;
+  scrollbar-width: none;
+}
+
+#sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .panel-title {
@@ -335,7 +340,7 @@ body {
 
 <body>
   <div id="header">
-    <h1>water main leak prediction</h1>
+    <h1>Water Main Leak Prediction Using Catboost</h1>
   </div>
 
   <div id="tabs">
@@ -710,22 +715,6 @@ body {
         alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
       });
 
-    const info = L.control({ position: "topright" });
-
-    info.onAdd = function () {
-      const div = L.DomUtil.create("div", "info-box");
-
-      div.innerHTML = `
-        <strong>Model output</strong><br>
-        Lines show pipe segments.<br>
-        Click a pipe for details.<br>
-        82% is the threshold for the model classifier (>82% probability predicts leak).
-      `;
-
-      return div;
-    };
-
-    info.addTo(map);
   </script>
 </body>
 </html>
