@@ -15,7 +15,7 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f9fafb;
+      background: #0f172a;
     }
 
     #header {
@@ -34,37 +34,6 @@
       margin: 5px 0 0;
       color: #d1d5db;
       font-size: 14px;
-    }
-
-    #map {
-      height: calc(100vh - 78px);
-      width: 100%;
-    }
-
-    .legend {
-      background: white;
-      padding: 10px 12px;
-      border-radius: 6px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
-      line-height: 20px;
-      font-size: 13px;
-    }
-
-    .legend span {
-      display: inline-block;
-      width: 14px;
-      height: 4px;
-      margin-right: 6px;
-      vertical-align: middle;
-    }
-
-    .info-box {
-      background: white;
-      padding: 10px 12px;
-      border-radius: 6px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
-      font-size: 13px;
-      max-width: 260px;
     }
 
     #dashboard {
@@ -96,6 +65,16 @@
       border: 1px solid #4b5563;
       background: #1f2937;
       color: white;
+      min-width: 150px;
+    }
+
+    .slider-control {
+      min-width: 220px;
+    }
+
+    .slider-control input[type="range"] {
+      width: 220px;
+      accent-color: #38bdf8;
     }
 
     #resetFilters {
@@ -115,11 +94,53 @@
       margin-left: auto;
       font-size: 14px;
       color: #e5e7eb;
+      white-space: nowrap;
+    }
+
+    #stats strong {
+      color: #38bdf8;
     }
 
     #map {
       height: calc(100vh - 145px);
       width: 100%;
+    }
+
+    .legend {
+      background: white;
+      padding: 10px 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+      line-height: 20px;
+      font-size: 13px;
+    }
+
+    .legend span {
+      display: inline-block;
+      width: 14px;
+      height: 4px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .info-box {
+      background: white;
+      padding: 10px 12px;
+      border-radius: 6px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
+      font-size: 13px;
+      max-width: 260px;
+    }
+
+    @media (max-width: 900px) {
+      #stats {
+        width: 100%;
+        margin-left: 0;
+      }
+
+      #map {
+        height: calc(100vh - 260px);
+      }
     }
   </style>
 </head>
@@ -137,49 +158,43 @@
         <option value="all">All materials</option>
       </select>
     </div>
-  
+
     <div class="control">
       <label for="liningFilter">Lining material</label>
       <select id="liningFilter">
         <option value="all">All linings</option>
       </select>
     </div>
-  
+
     <div class="control">
       <label for="sourceFilter">Source dataset</label>
       <select id="sourceFilter">
         <option value="all">All sources</option>
       </select>
     </div>
-  
-    <div class="control">
-      <label for="predictionFilter">Prediction</label>
-      <select id="predictionFilter">
-        <option value="all">All pipes</option>
-        <option value="1">Predicted leaks only</option>
-        <option value="0">Predicted non-leaks only</option>
-      </select>
+
+    <div class="control slider-control">
+      <label for="ageFilter">
+        Minimum pipe age: <span id="ageValue">0 years</span>
+      </label>
+      <input id="ageFilter" type="range" min="0" max="150" step="1" value="0">
     </div>
-  
-    <div class="control">
-      <label for="riskFilter">Minimum risk</label>
-      <select id="riskFilter">
-        <option value="0">All risk levels</option>
-        <option value="0.05">5%+</option>
-        <option value="0.10">10%+</option>
-        <option value="0.25">25%+</option>
-        <option value="0.50">50%+</option>
-      </select>
+
+    <div class="control slider-control">
+      <label for="riskFilter">
+        Minimum risk: <span id="riskValue">0%</span>
+      </label>
+      <input id="riskFilter" type="range" min="0" max="100" step="1" value="0">
     </div>
-  
+
     <button id="resetFilters">Reset filters</button>
-  
+
     <div id="stats">
       <strong id="visibleCount">0</strong> visible pipes /
       <strong id="totalCount">0</strong> total
     </div>
   </div>
-  
+
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -221,182 +236,197 @@
     }
 
     let allGeojsonData;
-let pipeLayer;
+    let pipeLayer;
 
-const materialFilter = document.getElementById("materialFilter");
-const liningFilter = document.getElementById("liningFilter");
-const sourceFilter = document.getElementById("sourceFilter");
-const predictionFilter = document.getElementById("predictionFilter");
-const riskFilter = document.getElementById("riskFilter");
-const resetFilters = document.getElementById("resetFilters");
-const visibleCount = document.getElementById("visibleCount");
-const totalCount = document.getElementById("totalCount");
+    const materialFilter = document.getElementById("materialFilter");
+    const liningFilter = document.getElementById("liningFilter");
+    const sourceFilter = document.getElementById("sourceFilter");
 
-function getProperty(feature, propertyName) {
-  const value = feature.properties[propertyName];
+    const riskFilter = document.getElementById("riskFilter");
+    const riskValue = document.getElementById("riskValue");
 
-  if (value === null || value === undefined || value === "") {
-    return "Unknown";
-  }
+    const ageFilter = document.getElementById("ageFilter");
+    const ageValue = document.getElementById("ageValue");
 
-  return String(value);
-}
+    const resetFilters = document.getElementById("resetFilters");
+    const visibleCount = document.getElementById("visibleCount");
+    const totalCount = document.getElementById("totalCount");
 
-function populateDropdown(selectElement, features, propertyName) {
-  const values = [...new Set(
-    features.map(feature => getProperty(feature, propertyName))
-  )].sort();
+    function getProperty(feature, propertyName) {
+      const value = feature.properties[propertyName];
 
-  values.forEach(value => {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = value;
-    selectElement.appendChild(option);
-  });
-}
+      if (value === null || value === undefined || value === "") {
+        return "Unknown";
+      }
 
-function featureMatchesFilters(feature) {
-  const properties = feature.properties;
+      return String(value);
+    }
 
-  const material = getProperty(feature, "material");
-  const lining = getProperty(feature, "lining_material");
-  const source = getProperty(feature, "source_dataset");
-  const predictedLeak = String(properties.predicted_leak_next_year);
-  const probability = Number(properties.leak_probability_next_year || 0);
+    function populateDropdown(selectElement, features, propertyName) {
+      const values = [...new Set(
+        features.map(feature => getProperty(feature, propertyName))
+      )].sort();
 
-  if (materialFilter.value !== "all" && material !== materialFilter.value) {
-    return false;
-  }
+      values.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        selectElement.appendChild(option);
+      });
+    }
 
-  if (liningFilter.value !== "all" && lining !== liningFilter.value) {
-    return false;
-  }
+    function featureMatchesFilters(feature) {
+      const properties = feature.properties;
 
-  if (sourceFilter.value !== "all" && source !== sourceFilter.value) {
-    return false;
-  }
+      const material = getProperty(feature, "material");
+      const lining = getProperty(feature, "lining_material");
+      const source = getProperty(feature, "source_dataset");
+      const probability = Number(properties.leak_probability_next_year || 0);
+      const pipeAge = Number(properties.pipe_age || 0);
 
-  if (predictionFilter.value !== "all" && predictedLeak !== predictionFilter.value) {
-    return false;
-  }
+      if (materialFilter.value !== "all" && material !== materialFilter.value) {
+        return false;
+      }
 
-  if (probability < Number(riskFilter.value)) {
-    return false;
-  }
+      if (liningFilter.value !== "all" && lining !== liningFilter.value) {
+        return false;
+      }
 
-  return true;
-}
+      if (sourceFilter.value !== "all" && source !== sourceFilter.value) {
+        return false;
+      }
 
-function renderPipes() {
-  if (!allGeojsonData) return;
+      if (probability < Number(riskFilter.value) / 100) {
+        return false;
+      }
 
-  const filteredFeatures = allGeojsonData.features.filter(featureMatchesFilters);
+      if (pipeAge < Number(ageFilter.value)) {
+        return false;
+      }
 
-  const filteredGeojson = {
-    type: "FeatureCollection",
-    features: filteredFeatures
-  };
+      return true;
+    }
 
-  if (pipeLayer) {
-    map.removeLayer(pipeLayer);
-  }
+    function renderPipes() {
+      if (!allGeojsonData) return;
 
-  pipeLayer = L.geoJSON(filteredGeojson, {
-    style: function (feature) {
-      const probability = Number(feature.properties.leak_probability_next_year);
+      const filteredFeatures = allGeojsonData.features.filter(featureMatchesFilters);
 
-      return {
-        color: getColor(probability),
-        weight: getWeight(probability),
-        opacity: 0.85
+      const filteredGeojson = {
+        type: "FeatureCollection",
+        features: filteredFeatures
       };
-    },
 
-    onEachFeature: function (feature, layer) {
-      const p = feature.properties;
-      const probability = Number(p.leak_probability_next_year);
+      if (pipeLayer) {
+        map.removeLayer(pipeLayer);
+      }
 
-      layer.bindPopup(`
-        <strong>Pipe ID:</strong> ${formatValue(p.pipe_id)}<br>
-        <strong>Risk rank:</strong> ${formatValue(p.risk_rank)}<br>
-        <strong>Leak probability:</strong> ${formatProbability(probability)}<br>
-        <strong>Predicted leak:</strong> ${formatValue(p.predicted_leak_next_year)}<br>
-        <hr>
-        <strong>Source:</strong> ${formatValue(p.source_dataset)}<br>
-        <strong>Material:</strong> ${formatValue(p.material)}<br>
-        <strong>Lining:</strong> ${formatValue(p.lining_material)}<br>
-        <strong>Diameter:</strong> ${formatValue(p.diameter_mm)} mm<br>
-        <strong>Install year:</strong> ${formatValue(p.installation_year)}<br>
-        <strong>Pipe age:</strong> ${formatValue(p.pipe_age)}<br>
-        <strong>Years since last leak:</strong> ${formatValue(p.years_since_last_leak, "No previous leak")}
-      `);
+      pipeLayer = L.geoJSON(filteredGeojson, {
+        style: function (feature) {
+          const probability = Number(feature.properties.leak_probability_next_year);
 
-      layer.on("mouseover", function () {
-        layer.setStyle({
-          weight: getWeight(probability) + 2,
-          opacity: 1
+          return {
+            color: getColor(probability),
+            weight: getWeight(probability),
+            opacity: 0.85
+          };
+        },
+
+        onEachFeature: function (feature, layer) {
+          const p = feature.properties;
+          const probability = Number(p.leak_probability_next_year);
+
+          layer.bindPopup(`
+            <strong>Pipe ID:</strong> ${formatValue(p.pipe_id)}<br>
+            <strong>Risk rank:</strong> ${formatValue(p.risk_rank)}<br>
+            <strong>Leak probability:</strong> ${formatProbability(probability)}<br>
+            <strong>Predicted leak:</strong> ${formatValue(p.predicted_leak_next_year)}<br>
+            <hr>
+            <strong>Source:</strong> ${formatValue(p.source_dataset)}<br>
+            <strong>Material:</strong> ${formatValue(p.material)}<br>
+            <strong>Lining:</strong> ${formatValue(p.lining_material)}<br>
+            <strong>Diameter:</strong> ${formatValue(p.diameter_mm)} mm<br>
+            <strong>Install year:</strong> ${formatValue(p.installation_year)}<br>
+            <strong>Pipe age:</strong> ${formatValue(p.pipe_age)}<br>
+            <strong>Years since last leak:</strong> ${formatValue(p.years_since_last_leak, "No previous leak")}
+          `);
+
+          layer.on("mouseover", function () {
+            layer.setStyle({
+              weight: getWeight(probability) + 2,
+              opacity: 1
+            });
+          });
+
+          layer.on("mouseout", function () {
+            if (pipeLayer) {
+              pipeLayer.resetStyle(layer);
+            }
+          });
+        }
+      }).addTo(map);
+
+      visibleCount.textContent = filteredFeatures.length.toLocaleString();
+      totalCount.textContent = allGeojsonData.features.length.toLocaleString();
+
+      if (filteredFeatures.length > 0) {
+        const bounds = pipeLayer.getBounds();
+
+        if (bounds.isValid()) {
+          map.fitBounds(bounds, {
+            padding: 30,
+            maxZoom: 14
+          });
+        }
+      }
+    }
+
+    function updateSliderLabels() {
+      riskValue.textContent = `${riskFilter.value}%`;
+      ageValue.textContent = `${ageFilter.value} years`;
+    }
+
+    function attachFilterListeners() {
+      [materialFilter, liningFilter, sourceFilter].forEach(element => {
+        element.addEventListener("change", renderPipes);
+      });
+
+      [riskFilter, ageFilter].forEach(element => {
+        element.addEventListener("input", function () {
+          updateSliderLabels();
+          renderPipes();
         });
       });
 
-      layer.on("mouseout", function () {
-        pipeLayer.resetStyle(layer);
+      resetFilters.addEventListener("click", function () {
+        materialFilter.value = "all";
+        liningFilter.value = "all";
+        sourceFilter.value = "all";
+        riskFilter.value = "0";
+        ageFilter.value = "0";
+
+        updateSliderLabels();
+        renderPipes();
       });
     }
-  }).addTo(map);
 
-  visibleCount.textContent = filteredFeatures.length.toLocaleString();
-  totalCount.textContent = allGeojsonData.features.length.toLocaleString();
+    fetch("predictions_catboost_lines.geojson")
+      .then(response => response.json())
+      .then(data => {
+        allGeojsonData = data;
 
-  if (filteredFeatures.length > 0) {
-    const bounds = pipeLayer.getBounds();
+        populateDropdown(materialFilter, data.features, "material");
+        populateDropdown(liningFilter, data.features, "lining_material");
+        populateDropdown(sourceFilter, data.features, "source_dataset");
 
-    if (bounds.isValid()) {
-      map.fitBounds(bounds, {
-        padding: 30,
-        maxZoom: 14
+        updateSliderLabels();
+        attachFilterListeners();
+        renderPipes();
+      })
+      .catch(error => {
+        console.error("Could not load GeoJSON:", error);
+        alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
       });
-    }
-  }
-}
-
-function attachFilterListeners() {
-  [
-    materialFilter,
-    liningFilter,
-    sourceFilter,
-    predictionFilter,
-    riskFilter
-  ].forEach(element => {
-    element.addEventListener("change", renderPipes);
-  });
-
-  resetFilters.addEventListener("click", function () {
-    materialFilter.value = "all";
-    liningFilter.value = "all";
-    sourceFilter.value = "all";
-    predictionFilter.value = "all";
-    riskFilter.value = "0";
-
-    renderPipes();
-  });
-}
-
-fetch("predictions_catboost_lines.geojson")
-  .then(response => response.json())
-  .then(data => {
-    allGeojsonData = data;
-
-    populateDropdown(materialFilter, data.features, "material");
-    populateDropdown(liningFilter, data.features, "lining_material");
-    populateDropdown(sourceFilter, data.features, "source_dataset");
-
-    attachFilterListeners();
-    renderPipes();
-  })
-  .catch(error => {
-    console.error("Could not load GeoJSON:", error);
-    alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
-  });
 
     const legend = L.control({ position: "bottomright" });
 

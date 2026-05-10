@@ -234,7 +234,7 @@ def export_predictions(df, model, threshold):
     )
 
     # Optional: only export the highest-risk pipes to keep GitHub Pages fast.
-    map_df = map_df.head(5000).copy()
+    map_df = map_df[map_df["predicted_leak_next_year"] == 1].copy()
 
     features = []
 
