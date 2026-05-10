@@ -82,9 +82,9 @@
   <script>
     const map = L.map("map").setView([49.25, -123.12], 12);
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-      attribution: "© OpenStreetMap contributors"
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 20,
+      attribution: "© OpenStreetMap contributors © CARTO"
     }).addTo(map);
 
     function getColor(probability) {
