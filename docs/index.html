@@ -12,17 +12,22 @@
   />
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #0f172a;
+      color: white;
     }
 
     #header {
       padding: 14px 18px;
       background: #111827;
       color: white;
-      z-index: 1000;
+      border-bottom: 1px solid #374151;
     }
 
     #header h1 {
@@ -36,22 +41,71 @@
       font-size: 14px;
     }
 
+    #appLayout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      height: calc(100vh - 67px);
+      width: 100%;
+    }
+
+    #sidebar {
+      background: #111827;
+      border-right: 1px solid #374151;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    #tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tab-button {
+      padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid #4b5563;
+      background: #1f2937;
+      color: #d1d5db;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .tab-button:hover {
+      background: #374151;
+    }
+
+    .tab-button.active {
+      background: #38bdf8;
+      color: #0f172a;
+      border-color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .panel-title {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: white;
+    }
+
+    .panel-subtitle {
+      margin: 0 0 16px;
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
     #dashboard {
       display: flex;
-      flex-wrap: wrap;
-      align-items: end;
-      gap: 12px;
-      padding: 12px 18px;
-      background: #111827;
-      color: white;
-      border-top: 1px solid #374151;
-      border-bottom: 1px solid #374151;
+      flex-direction: column;
+      gap: 14px;
     }
 
     .control {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .control label {
@@ -59,31 +113,30 @@
       color: #d1d5db;
     }
 
-    .control select {
-      padding: 7px 9px;
-      border-radius: 6px;
+    .control select,
+    .control input[type="text"] {
+      padding: 9px 10px;
+      border-radius: 8px;
       border: 1px solid #4b5563;
       background: #1f2937;
       color: white;
-      min-width: 150px;
-    }
-
-    .slider-control {
-      min-width: 220px;
+      width: 100%;
     }
 
     .slider-control input[type="range"] {
-      width: 220px;
+      width: 100%;
       accent-color: #38bdf8;
     }
 
     #resetFilters {
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 10px 12px;
+      border-radius: 8px;
       border: 1px solid #4b5563;
       background: #374151;
       color: white;
       cursor: pointer;
+      font-weight: bold;
+      margin-top: 4px;
     }
 
     #resetFilters:hover {
@@ -91,40 +144,59 @@
     }
 
     #stats {
-      margin-left: auto;
+      margin-top: 4px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px solid #374151;
       font-size: 14px;
       color: #e5e7eb;
-      white-space: nowrap;
+      line-height: 1.5;
     }
 
     #stats strong {
       color: #38bdf8;
     }
 
+    #aboutView {
+      display: none;
+      color: #d1d5db;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    #aboutView h2 {
+      margin: 0 0 12px;
+      color: white;
+      font-size: 18px;
+    }
+
+    #aboutView h3 {
+      margin: 20px 0 6px;
+      color: #38bdf8;
+      font-size: 15px;
+    }
+
+    #aboutView p {
+      margin: 0 0 12px;
+    }
+
+    .about-note {
+      padding: 12px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px solid #374151;
+      color: #e5e7eb;
+    }
+
     #map {
-      height: calc(100vh - 145px);
+      height: 100%;
       width: 100%;
-    }
-
-    .legend {
-      background: white;
-      padding: 10px 12px;
-      border-radius: 6px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.25);
-      line-height: 20px;
-      font-size: 13px;
-    }
-
-    .legend span {
-      display: inline-block;
-      width: 14px;
-      height: 4px;
-      margin-right: 6px;
-      vertical-align: middle;
     }
 
     .info-box {
       background: white;
+      color: #111827;
       padding: 10px 12px;
       border-radius: 6px;
       box-shadow: 0 1px 6px rgba(0,0,0,0.25);
@@ -133,13 +205,20 @@
     }
 
     @media (max-width: 900px) {
-      #stats {
-        width: 100%;
-        margin-left: 0;
+      #appLayout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: calc(100vh - 67px);
+      }
+
+      #sidebar {
+        max-height: 45vh;
+        border-right: none;
+        border-bottom: 1px solid #374151;
       }
 
       #map {
-        height: calc(100vh - 260px);
+        min-height: 55vh;
       }
     }
   </style>
@@ -151,51 +230,112 @@
     <p>Pipe-level model predictions for next-year leak risk</p>
   </div>
 
-  <div id="dashboard">
-    <div class="control">
-      <label for="materialFilter">Material</label>
-      <select id="materialFilter">
-        <option value="all">All materials</option>
-      </select>
-    </div>
+  <div id="appLayout">
+    <aside id="sidebar">
+      <div id="tabs">
+        <button id="mapTab" class="tab-button active">Map Filters</button>
+        <button id="aboutTab" class="tab-button">About</button>
+      </div>
 
-    <div class="control">
-      <label for="liningFilter">Lining material</label>
-      <select id="liningFilter">
-        <option value="all">All linings</option>
-      </select>
-    </div>
+      <div id="mapView">
+        <h2 class="panel-title">Filters</h2>
+        <p class="panel-subtitle">
+          Filter predicted leak pipe segments by material, water main type, pipe age, and model risk.
+        </p>
 
-    <div class="control">
-      <label for="sourceFilter">Water Main Type</label>
-      <select id="sourceFilter">
-        <option value="all">All sources</option>
-      </select>
-    </div>
+        <div id="dashboard">
+          <div class="control">
+            <label for="materialFilter">Material</label>
+            <select id="materialFilter">
+              <option value="all">All materials</option>
+            </select>
+          </div>
 
-    <div class="control slider-control">
-      <label for="ageFilter">
-        Minimum pipe age: <span id="ageValue">0 years</span>
-      </label>
-      <input id="ageFilter" type="range" min="0" max="150" step="1" value="0">
-    </div>
+          <div class="control">
+            <label for="liningFilter">Lining material</label>
+            <select id="liningFilter">
+              <option value="all">All linings</option>
+            </select>
+          </div>
 
-    <div class="control slider-control">
-      <label for="riskFilter">
-        Minimum risk: <span id="riskValue">0%</span>
-      </label>
-      <input id="riskFilter" type="range" min="0" max="100" step="1" value="0">
-    </div>
+          <div class="control">
+            <label for="sourceFilter">Water Main Type</label>
+            <select id="sourceFilter">
+              <option value="all">All sources</option>
+            </select>
+          </div>
 
-    <button id="resetFilters">Reset filters</button>
+          <div class="control slider-control">
+            <label for="ageFilter">
+              Minimum pipe age: <span id="ageValue">0 years</span>
+            </label>
+            <input id="ageFilter" type="range" min="0" max="150" step="1" value="0">
+          </div>
 
-    <div id="stats">
-      <strong id="visibleCount">0</strong> visible pipes /
-      <strong id="totalCount">0</strong> total
-    </div>
+          <div class="control slider-control">
+            <label for="riskFilter">
+              Leak Probability Next Year: <span id="riskValue">0%</span>
+            </label>
+            <input id="riskFilter" type="range" min="0" max="100" step="1" value="0">
+          </div>
+
+          <button id="resetFilters">Reset filters</button>
+
+          <div id="stats">
+            <strong id="visibleCount">0</strong> visible pipes<br>
+            <strong id="totalCount">0</strong> total mapped pipes
+          </div>
+        </div>
+      </div>
+
+      <div id="aboutView">
+        <h2>About this application</h2>
+
+        <div class="about-note">
+          This map shows water main pipe segments that the machine learning model classified as predicted leaks for the next year.
+        </div>
+
+        <h3>Predicted probability</h3>
+        <p>
+          The leak probability is the model's estimated chance that a pipe will leak in the next year.
+          For example, 82% means the model estimated an 82% next-year leak probability for that pipe-year row.
+        </p>
+
+        <h3>Predicted leak</h3>
+        <p>
+          A predicted leak is a pipe whose predicted probability is above the model's classification threshold.
+          In this project, the threshold is approximately 82%.
+        </p>
+
+        <h3>Risk rank</h3>
+        <p>
+          Risk rank orders pipes from highest to lowest predicted probability. A lower rank means the pipe is considered higher risk by the model.
+        </p>
+
+        <h3>Pipe age</h3>
+        <p>
+          Pipe age is calculated from the pipe's installation year and the analysis year. The slider filters out pipes younger than the selected age.
+        </p>
+
+        <h3>Material and lining</h3>
+        <p>
+          Material and lining material describe the physical pipe construction. These fields are included because different pipe types may have different leak patterns.
+        </p>
+
+        <h3>Water main type</h3>
+        <p>
+          Water main type separates distribution and transmission mains when that source information is available.
+        </p>
+
+        <h3>Important limitation</h3>
+        <p>
+          This model is intended for risk screening and prioritization. It should not be treated as a guaranteed prediction that a specific pipe will or will not leak.
+        </p>
+      </div>
+    </aside>
+
+    <main id="map"></main>
   </div>
-
-  <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -237,6 +377,7 @@
 
     let allGeojsonData;
     let pipeLayer;
+    let hasFitInitialBounds = false;
 
     const materialFilter = document.getElementById("materialFilter");
     const liningFilter = document.getElementById("liningFilter");
@@ -251,6 +392,11 @@
     const resetFilters = document.getElementById("resetFilters");
     const visibleCount = document.getElementById("visibleCount");
     const totalCount = document.getElementById("totalCount");
+
+    const mapTab = document.getElementById("mapTab");
+    const aboutTab = document.getElementById("aboutTab");
+    const mapView = document.getElementById("mapView");
+    const aboutView = document.getElementById("aboutView");
 
     function getProperty(feature, propertyName) {
       const value = feature.properties[propertyName];
@@ -342,7 +488,7 @@
             <strong>Leak probability:</strong> ${formatProbability(probability)}<br>
             <strong>Predicted leak:</strong> ${formatValue(p.predicted_leak_next_year)}<br>
             <hr>
-            <strong>Source:</strong> ${formatValue(p.source_dataset)}<br>
+            <strong>Water main type:</strong> ${formatValue(p.source_dataset)}<br>
             <strong>Material:</strong> ${formatValue(p.material)}<br>
             <strong>Lining:</strong> ${formatValue(p.lining_material)}<br>
             <strong>Diameter:</strong> ${formatValue(p.diameter_mm)} mm<br>
@@ -369,7 +515,7 @@
       visibleCount.textContent = filteredFeatures.length.toLocaleString();
       totalCount.textContent = allGeojsonData.features.length.toLocaleString();
 
-      if (filteredFeatures.length > 0) {
+      if (!hasFitInitialBounds && filteredFeatures.length > 0) {
         const bounds = pipeLayer.getBounds();
 
         if (bounds.isValid()) {
@@ -377,6 +523,8 @@
             padding: 30,
             maxZoom: 14
           });
+
+          hasFitInitialBounds = true;
         }
       }
     }
@@ -410,6 +558,26 @@
       });
     }
 
+    mapTab.addEventListener("click", function () {
+      mapView.style.display = "block";
+      aboutView.style.display = "none";
+
+      mapTab.classList.add("active");
+      aboutTab.classList.remove("active");
+
+      setTimeout(function () {
+        map.invalidateSize();
+      }, 100);
+    });
+
+    aboutTab.addEventListener("click", function () {
+      mapView.style.display = "none";
+      aboutView.style.display = "block";
+
+      aboutTab.classList.add("active");
+      mapTab.classList.remove("active");
+    });
+
     fetch("predictions_catboost_lines.geojson")
       .then(response => response.json())
       .then(data => {
@@ -436,8 +604,8 @@
       div.innerHTML = `
         <strong>Model output</strong><br>
         Lines show pipe segments.<br>
-        Click a pipe for details.
-        82% is the threshold for the model classifier (>82% probability predicts leak)
+        Click a pipe for details.<br>
+        82% is the threshold for the model classifier (>82% probability predicts leak).
       `;
 
       return div;
