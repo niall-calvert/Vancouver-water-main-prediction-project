@@ -730,9 +730,12 @@ body {
         }, 250);
       })
       .catch(error => {
-        console.error("Could not load GeoJSON:", error);
-        alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
-      });
+  if (!allGeojsonData) {
+    console.error("GeoJSON failed to load and no pipe data is available:", error);
+  } else {
+    console.warn("A GeoJSON load warning occurred, but pipe data is already loaded:", error);
+  }
+});
 
   </script>
 </body>
