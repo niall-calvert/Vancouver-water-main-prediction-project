@@ -66,6 +66,61 @@
       font-size: 13px;
       max-width: 260px;
     }
+
+    #dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 12px;
+      padding: 12px 18px;
+      background: #111827;
+      color: white;
+      border-top: 1px solid #374151;
+      border-bottom: 1px solid #374151;
+    }
+
+    .control {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control label {
+      font-size: 12px;
+      color: #d1d5db;
+    }
+
+    .control select {
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid #4b5563;
+      background: #1f2937;
+      color: white;
+    }
+
+    #resetFilters {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #4b5563;
+      background: #374151;
+      color: white;
+      cursor: pointer;
+    }
+
+    #resetFilters:hover {
+      background: #4b5563;
+    }
+
+    #stats {
+      margin-left: auto;
+      font-size: 14px;
+      color: #e5e7eb;
+    }
+
+    #map {
+      height: calc(100vh - 145px);
+      width: 100%;
+    }
   </style>
 </head>
 
@@ -75,6 +130,56 @@
     <p>Pipe-level model predictions for next-year leak risk</p>
   </div>
 
+  <div id="dashboard">
+    <div class="control">
+      <label for="materialFilter">Material</label>
+      <select id="materialFilter">
+        <option value="all">All materials</option>
+      </select>
+    </div>
+  
+    <div class="control">
+      <label for="liningFilter">Lining material</label>
+      <select id="liningFilter">
+        <option value="all">All linings</option>
+      </select>
+    </div>
+  
+    <div class="control">
+      <label for="sourceFilter">Source dataset</label>
+      <select id="sourceFilter">
+        <option value="all">All sources</option>
+      </select>
+    </div>
+  
+    <div class="control">
+      <label for="predictionFilter">Prediction</label>
+      <select id="predictionFilter">
+        <option value="all">All pipes</option>
+        <option value="1">Predicted leaks only</option>
+        <option value="0">Predicted non-leaks only</option>
+      </select>
+    </div>
+  
+    <div class="control">
+      <label for="riskFilter">Minimum risk</label>
+      <select id="riskFilter">
+        <option value="0">All risk levels</option>
+        <option value="0.05">5%+</option>
+        <option value="0.10">10%+</option>
+        <option value="0.25">25%+</option>
+        <option value="0.50">50%+</option>
+      </select>
+    </div>
+  
+    <button id="resetFilters">Reset filters</button>
+  
+    <div id="stats">
+      <strong id="visibleCount">0</strong> visible pipes /
+      <strong id="totalCount">0</strong> total
+    </div>
+  </div>
+  
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -115,61 +220,183 @@
       return (probability * 100).toFixed(2) + "%";
     }
 
-    let pipeLayer;
+    let allGeojsonData;
+let pipeLayer;
 
-    fetch("predictions_catboost_lines.geojson")
-      .then(response => response.json())
-      .then(data => {
-        pipeLayer = L.geoJSON(data, {
-          style: function (feature) {
-            const probability = Number(feature.properties.leak_probability_next_year);
+const materialFilter = document.getElementById("materialFilter");
+const liningFilter = document.getElementById("liningFilter");
+const sourceFilter = document.getElementById("sourceFilter");
+const predictionFilter = document.getElementById("predictionFilter");
+const riskFilter = document.getElementById("riskFilter");
+const resetFilters = document.getElementById("resetFilters");
+const visibleCount = document.getElementById("visibleCount");
+const totalCount = document.getElementById("totalCount");
 
-            return {
-              color: getColor(probability),
-              weight: getWeight(probability),
-              opacity: 0.85
-            };
-          },
+function getProperty(feature, propertyName) {
+  const value = feature.properties[propertyName];
 
-          onEachFeature: function (feature, layer) {
-            const p = feature.properties;
-            const probability = Number(p.leak_probability_next_year);
+  if (value === null || value === undefined || value === "") {
+    return "Unknown";
+  }
 
-            layer.bindPopup(`
-              <strong>Pipe ID:</strong> ${formatValue(p.pipe_id)}<br>
-              <strong>Risk rank:</strong> ${formatValue(p.risk_rank)}<br>
-              <strong>Leak probability:</strong> ${formatProbability(probability)}<br>
-              <strong>Predicted leak:</strong> ${formatValue(p.predicted_leak_next_year)}<br>
-              <hr>
-              <strong>Material:</strong> ${formatValue(p.material)}<br>
-              <strong>Lining:</strong> ${formatValue(p.lining_material)}<br>
-              <strong>Diameter:</strong> ${formatValue(p.diameter_mm)} mm<br>
-              <strong>Install year:</strong> ${formatValue(p.installation_year)}<br>
-              <strong>Pipe age:</strong> ${formatValue(p.pipe_age)}<br>
-              <strong>Years since last leak:</strong> ${formatValue(p.years_since_last_leak, "No previous leak")}
-            `);
+  return String(value);
+}
 
-            layer.on("mouseover", function () {
-              layer.setStyle({
-                weight: getWeight(probability) + 2,
-                opacity: 1
-              });
-            });
+function populateDropdown(selectElement, features, propertyName) {
+  const values = [...new Set(
+    features.map(feature => getProperty(feature, propertyName))
+  )].sort();
 
-            layer.on("mouseout", function () {
-              pipeLayer.resetStyle(layer);
-            });
-          }
-        }).addTo(map);
+  values.forEach(value => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    selectElement.appendChild(option);
+  });
+}
 
-        if (pipeLayer.getBounds().isValid()) {
-          map.fitBounds(pipeLayer.getBounds());
-        }
-      })
-      .catch(error => {
-        console.error("Could not load GeoJSON:", error);
-        alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
+function featureMatchesFilters(feature) {
+  const properties = feature.properties;
+
+  const material = getProperty(feature, "material");
+  const lining = getProperty(feature, "lining_material");
+  const source = getProperty(feature, "source_dataset");
+  const predictedLeak = String(properties.predicted_leak_next_year);
+  const probability = Number(properties.leak_probability_next_year || 0);
+
+  if (materialFilter.value !== "all" && material !== materialFilter.value) {
+    return false;
+  }
+
+  if (liningFilter.value !== "all" && lining !== liningFilter.value) {
+    return false;
+  }
+
+  if (sourceFilter.value !== "all" && source !== sourceFilter.value) {
+    return false;
+  }
+
+  if (predictionFilter.value !== "all" && predictedLeak !== predictionFilter.value) {
+    return false;
+  }
+
+  if (probability < Number(riskFilter.value)) {
+    return false;
+  }
+
+  return true;
+}
+
+function renderPipes() {
+  if (!allGeojsonData) return;
+
+  const filteredFeatures = allGeojsonData.features.filter(featureMatchesFilters);
+
+  const filteredGeojson = {
+    type: "FeatureCollection",
+    features: filteredFeatures
+  };
+
+  if (pipeLayer) {
+    map.removeLayer(pipeLayer);
+  }
+
+  pipeLayer = L.geoJSON(filteredGeojson, {
+    style: function (feature) {
+      const probability = Number(feature.properties.leak_probability_next_year);
+
+      return {
+        color: getColor(probability),
+        weight: getWeight(probability),
+        opacity: 0.85
+      };
+    },
+
+    onEachFeature: function (feature, layer) {
+      const p = feature.properties;
+      const probability = Number(p.leak_probability_next_year);
+
+      layer.bindPopup(`
+        <strong>Pipe ID:</strong> ${formatValue(p.pipe_id)}<br>
+        <strong>Risk rank:</strong> ${formatValue(p.risk_rank)}<br>
+        <strong>Leak probability:</strong> ${formatProbability(probability)}<br>
+        <strong>Predicted leak:</strong> ${formatValue(p.predicted_leak_next_year)}<br>
+        <hr>
+        <strong>Source:</strong> ${formatValue(p.source_dataset)}<br>
+        <strong>Material:</strong> ${formatValue(p.material)}<br>
+        <strong>Lining:</strong> ${formatValue(p.lining_material)}<br>
+        <strong>Diameter:</strong> ${formatValue(p.diameter_mm)} mm<br>
+        <strong>Install year:</strong> ${formatValue(p.installation_year)}<br>
+        <strong>Pipe age:</strong> ${formatValue(p.pipe_age)}<br>
+        <strong>Years since last leak:</strong> ${formatValue(p.years_since_last_leak, "No previous leak")}
+      `);
+
+      layer.on("mouseover", function () {
+        layer.setStyle({
+          weight: getWeight(probability) + 2,
+          opacity: 1
+        });
       });
+
+      layer.on("mouseout", function () {
+        pipeLayer.resetStyle(layer);
+      });
+    }
+  }).addTo(map);
+
+  visibleCount.textContent = filteredFeatures.length.toLocaleString();
+  totalCount.textContent = allGeojsonData.features.length.toLocaleString();
+
+  if (filteredFeatures.length > 0) {
+    const bounds = pipeLayer.getBounds();
+
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, {
+        padding: 30,
+        maxZoom: 14
+      });
+    }
+  }
+}
+
+function attachFilterListeners() {
+  [
+    materialFilter,
+    liningFilter,
+    sourceFilter,
+    predictionFilter,
+    riskFilter
+  ].forEach(element => {
+    element.addEventListener("change", renderPipes);
+  });
+
+  resetFilters.addEventListener("click", function () {
+    materialFilter.value = "all";
+    liningFilter.value = "all";
+    sourceFilter.value = "all";
+    predictionFilter.value = "all";
+    riskFilter.value = "0";
+
+    renderPipes();
+  });
+}
+
+fetch("predictions_catboost_lines.geojson")
+  .then(response => response.json())
+  .then(data => {
+    allGeojsonData = data;
+
+    populateDropdown(materialFilter, data.features, "material");
+    populateDropdown(liningFilter, data.features, "lining_material");
+    populateDropdown(sourceFilter, data.features, "source_dataset");
+
+    attachFilterListeners();
+    renderPipes();
+  })
+  .catch(error => {
+    console.error("Could not load GeoJSON:", error);
+    alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
+  });
 
     const legend = L.control({ position: "bottomright" });
 
