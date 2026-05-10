@@ -41,29 +41,16 @@
       font-size: 14px;
     }
 
-    #appLayout {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      height: calc(100vh - 67px);
-      width: 100%;
-    }
-
-    #sidebar {
-      background: #111827;
-      border-right: 1px solid #374151;
-      overflow-y: auto;
-      padding: 16px;
-    }
-
     #tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
       gap: 8px;
-      margin-bottom: 16px;
+      padding: 10px 18px;
+      background: #0f172a;
+      border-bottom: 1px solid #374151;
     }
 
     .tab-button {
-      padding: 9px 10px;
+      padding: 9px 14px;
       border-radius: 8px;
       border: 1px solid #4b5563;
       background: #1f2937;
@@ -81,6 +68,24 @@
       color: #0f172a;
       border-color: #38bdf8;
       font-weight: bold;
+    }
+
+    #mapView {
+      display: block;
+    }
+
+    #appLayout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      height: calc(100vh - 114px);
+      width: 100%;
+    }
+
+    #sidebar {
+      background: #111827;
+      border-right: 1px solid #374151;
+      overflow-y: auto;
+      padding: 16px;
     }
 
     .panel-title {
@@ -158,27 +163,42 @@
       color: #38bdf8;
     }
 
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
     #aboutView {
       display: none;
+      min-height: calc(100vh - 114px);
+      background: #0f172a;
       color: #d1d5db;
-      font-size: 14px;
-      line-height: 1.55;
+      padding: 32px;
     }
 
-    #aboutView h2 {
-      margin: 0 0 12px;
+    .about-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #111827;
+      border: 1px solid #374151;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .about-card h2 {
+      margin-top: 0;
       color: white;
-      font-size: 18px;
     }
 
-    #aboutView h3 {
-      margin: 20px 0 6px;
+    .about-card h3 {
+      margin-top: 24px;
       color: #38bdf8;
-      font-size: 15px;
     }
 
-    #aboutView p {
-      margin: 0 0 12px;
+    .about-card p {
+      line-height: 1.6;
+      color: #d1d5db;
     }
 
     .about-note {
@@ -187,11 +207,7 @@
       background: #0f172a;
       border: 1px solid #374151;
       color: #e5e7eb;
-    }
-
-    #map {
-      height: 100%;
-      width: 100%;
+      margin-bottom: 20px;
     }
 
     .info-box {
@@ -208,7 +224,7 @@
       #appLayout {
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
-        height: calc(100vh - 67px);
+        height: calc(100vh - 114px);
       }
 
       #sidebar {
@@ -220,6 +236,10 @@
       #map {
         min-height: 55vh;
       }
+
+      #aboutView {
+        padding: 18px;
+      }
     }
   </style>
 </head>
@@ -230,14 +250,14 @@
     <p>Pipe-level model predictions for next-year leak risk</p>
   </div>
 
-  <div id="appLayout">
-    <aside id="sidebar">
-      <div id="tabs">
-        <button id="mapTab" class="tab-button active">Map Filters</button>
-        <button id="aboutTab" class="tab-button">About</button>
-      </div>
+  <div id="tabs">
+    <button id="mapTab" class="tab-button active">Map</button>
+    <button id="aboutTab" class="tab-button">About</button>
+  </div>
 
-      <div id="mapView">
+  <div id="mapView">
+    <div id="appLayout">
+      <aside id="sidebar">
         <h2 class="panel-title">Filters</h2>
         <p class="panel-subtitle">
           Filter predicted leak pipe segments by material, water main type, pipe age, and model risk.
@@ -286,55 +306,57 @@
             <strong id="totalCount">0</strong> total mapped pipes
           </div>
         </div>
+      </aside>
+
+      <main id="map"></main>
+    </div>
+  </div>
+
+  <div id="aboutView">
+    <div class="about-card">
+      <h2>About this application</h2>
+
+      <div class="about-note">
+        This map shows water main pipe segments that the machine learning model classified as predicted leaks for the next year.
       </div>
 
-      <div id="aboutView">
-        <h2>About this application</h2>
+      <h3>Predicted probability</h3>
+      <p>
+        The leak probability is the model's estimated chance that a pipe will leak in the next year.
+        For example, 82% means the model estimated an 82% next-year leak probability for that pipe-year row.
+      </p>
 
-        <div class="about-note">
-          This map shows water main pipe segments that the machine learning model classified as predicted leaks for the next year.
-        </div>
+      <h3>Predicted leak</h3>
+      <p>
+        A predicted leak is a pipe whose predicted probability is above the model's classification threshold.
+        In this project, the threshold is approximately 82%.
+      </p>
 
-        <h3>Predicted probability</h3>
-        <p>
-          The leak probability is the model's estimated chance that a pipe will leak in the next year.
-          For example, 82% means the model estimated an 82% next-year leak probability for that pipe-year row.
-        </p>
+      <h3>Risk rank</h3>
+      <p>
+        Risk rank orders pipes from highest to lowest predicted probability. A lower rank means the pipe is considered higher risk by the model.
+      </p>
 
-        <h3>Predicted leak</h3>
-        <p>
-          A predicted leak is a pipe whose predicted probability is above the model's classification threshold.
-          In this project, the threshold is approximately 82%.
-        </p>
+      <h3>Pipe age</h3>
+      <p>
+        Pipe age is calculated from the pipe's installation year and the analysis year. The slider filters out pipes younger than the selected age.
+      </p>
 
-        <h3>Risk rank</h3>
-        <p>
-          Risk rank orders pipes from highest to lowest predicted probability. A lower rank means the pipe is considered higher risk by the model.
-        </p>
+      <h3>Material and lining</h3>
+      <p>
+        Material and lining material describe the physical pipe construction. These fields are included because different pipe types may have different leak patterns.
+      </p>
 
-        <h3>Pipe age</h3>
-        <p>
-          Pipe age is calculated from the pipe's installation year and the analysis year. The slider filters out pipes younger than the selected age.
-        </p>
+      <h3>Water main type</h3>
+      <p>
+        Water main type separates distribution and transmission mains when that source information is available.
+      </p>
 
-        <h3>Material and lining</h3>
-        <p>
-          Material and lining material describe the physical pipe construction. These fields are included because different pipe types may have different leak patterns.
-        </p>
-
-        <h3>Water main type</h3>
-        <p>
-          Water main type separates distribution and transmission mains when that source information is available.
-        </p>
-
-        <h3>Important limitation</h3>
-        <p>
-          This model is intended for risk screening and prioritization. It should not be treated as a guaranteed prediction that a specific pipe will or will not leak.
-        </p>
-      </div>
-    </aside>
-
-    <main id="map"></main>
+      <h3>Important limitation</h3>
+      <p>
+        This model is intended for risk screening and prioritization. It should not be treated as a guaranteed prediction that a specific pipe will or will not leak.
+      </p>
+    </div>
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
