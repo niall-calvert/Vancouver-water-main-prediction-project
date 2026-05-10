@@ -167,7 +167,7 @@
     </div>
 
     <div class="control">
-      <label for="sourceFilter">Source dataset</label>
+      <label for="sourceFilter">Water Main Type</label>
       <select id="sourceFilter">
         <option value="all">All sources</option>
       </select>
@@ -428,25 +428,6 @@
         alert("Could not load predictions_catboost_lines.geojson. Make sure it is in the docs folder.");
       });
 
-    const legend = L.control({ position: "bottomright" });
-
-    legend.onAdd = function () {
-      const div = L.DomUtil.create("div", "legend");
-
-      div.innerHTML = `
-        <strong>Leak probability</strong><br>
-        <span style="background:#7f1d1d"></span> 50%+<br>
-        <span style="background:#dc2626"></span> 25–50%<br>
-        <span style="background:#f97316"></span> 10–25%<br>
-        <span style="background:#eab308"></span> 5–10%<br>
-        <span style="background:#22c55e"></span> &lt;5%
-      `;
-
-      return div;
-    };
-
-    legend.addTo(map);
-
     const info = L.control({ position: "topright" });
 
     info.onAdd = function () {
@@ -455,8 +436,8 @@
       div.innerHTML = `
         <strong>Model output</strong><br>
         Lines show pipe segments.<br>
-        Color shows predicted next-year leak risk.<br>
         Click a pipe for details.
+        82% is the threshold for the model classifier (>82% probability predicts leak)
       `;
 
       return div;
