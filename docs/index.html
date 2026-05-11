@@ -354,6 +354,224 @@ body {
     padding: 18px;
   }
 }
+
+/* Technical report content */
+.report-card {
+  max-width: 1000px;
+}
+
+.hero-report {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+}
+
+.hero-report h2 {
+  font-size: 34px;
+  line-height: 1.05;
+  letter-spacing: -0.06em;
+  margin: 0 0 14px;
+  color: var(--accent);
+  text-transform: lowercase;
+}
+
+.hero-text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 820px;
+}
+
+.report-section {
+  margin: 34px 0;
+}
+
+.report-section h3 {
+  color: var(--accent);
+  font-size: 18px;
+  margin-bottom: 14px;
+  text-transform: lowercase;
+}
+
+.report-section p {
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 14px;
+}
+
+.pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0;
+}
+
+.pipeline div {
+  padding: 9px 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+.pipeline span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.definition-grid,
+.model-grid,
+.metric-grid,
+.split-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.definition-card,
+.model-card,
+.metric-grid div,
+.split-grid div,
+.question-box,
+.result-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.definition-card h4,
+.model-card h4,
+.metric-grid h4,
+.split-grid h4,
+.result-card h4 {
+  margin: 0 0 8px;
+  color: var(--text);
+  text-transform: lowercase;
+}
+
+.definition-card p,
+.model-card p,
+.metric-grid p,
+.split-grid p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.clean-list {
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 14px;
+}
+
+.clean-list li {
+  margin: 8px 0;
+}
+
+.question-box strong {
+  color: var(--accent);
+  text-transform: lowercase;
+}
+
+.data-table {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 18px 0;
+}
+
+.data-row {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.data-row:last-child {
+  border-bottom: none;
+}
+
+.data-header {
+  background: var(--panel-soft);
+  color: var(--text);
+  font-weight: 700;
+  text-transform: lowercase;
+}
+
+pre {
+  background: #1f2124;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 18px 0;
+}
+
+code {
+  font-family: "Roboto Mono", "JetBrains Mono", "Fira Code", monospace;
+  font-size: 12px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.result-grid div {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.result-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+  text-transform: lowercase;
+}
+
+.result-grid strong {
+  color: var(--accent);
+  font-size: 20px;
+}
+
+@media (max-width: 800px) {
+  .definition-grid,
+  .model-grid,
+  .metric-grid,
+  .split-grid,
+  .result-grid,
+  .data-row {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-report h2 {
+    font-size: 27px;
+  }
+}
+
   </style>
 </head>
 
@@ -426,49 +644,284 @@ body {
   </div>
 
   <div id="aboutView">
-    <div class="about-card">
-      <h2>About this application</h2>
+    <div class="about-card report-card">
+      <section class="hero-report">
+        <p class="eyebrow">technical report</p>
+        <h2>Water Main Leak Prediction Using CatBoost</h2>
+        <p class="hero-text">
+          This project uses public City of Vancouver water main and 311 service request data to
+          predict which pipe segments are most likely to leak in the next year. The final output is
+          an interactive web map that visualizes predicted 2026 leak risk for individual pipe
+          segments.
+        </p>
+      </section>
 
-      <div class="about-note">
-        This map shows water main pipe segments that the machine learning model classified as predicted leaks for the next year.
-      </div>
+      <section class="report-section">
+        <h3>1. Introduction</h3>
+        <p>
+          The data pipeline began by importing records from City of Vancouver API endpoints into a
+          PostgreSQL database running inside Docker Desktop. Python was used to request the raw API
+          data and store each record as JSON, while SQL was used to join, filter, clean, and reshape
+          the datasets into a machine-learning-ready format.
+        </p>
+        <p>
+          The workflow included joining the transmission and distribution water main datasets,
+          cleaning and combining 311 water leak reports, triangulating reported leak locations to
+          nearby water mains with coordinate information, and transforming the final result into a
+          pipe-year dataset. The model was then trained using a time-based split, tested with
+          multiple boosting algorithms, and exported to a GeoJSON file for visualization.
+        </p>
+        <div class="pipeline">
+          <div>vancouver api</div><span>→</span>
+          <div>python import</div><span>→</span>
+          <div>docker + postgresql</div><span>→</span>
+          <div>sql + postgis</div><span>→</span>
+          <div>catboost</div><span>→</span>
+          <div>html dashboard</div>
+        </div>
+      </section>
 
-      <h3>Predicted probability</h3>
-      <p>
-        The leak probability is the model's estimated chance that a pipe will leak in the next year.
-        For example, 82% means the model estimated an 82% next-year leak probability for that pipe-year row.
-      </p>
+      <section class="report-section">
+        <h3>2. Background and Motivation</h3>
+        <p>
+          Water mains are a core part of municipal infrastructure. They move treated drinking water
+          through the city and help supply connected systems such as hydrants, sprinklers, homes, and
+          businesses. When a water main leaks, the consequences can extend beyond water loss.
+        </p>
 
-      <h3>Predicted leak</h3>
-      <p>
-        A predicted leak is a pipe whose predicted probability is above the model's classification threshold.
-        In this project, the threshold is approximately 82%.
-      </p>
+        <div class="definition-grid">
+          <div class="definition-card">
+            <h4>water main</h4>
+            <p>A pipe that carries treated water through the municipal water system. Water mains connect to service lines, buildings, hydrants, and other water infrastructure.</p>
+          </div>
+          <div class="definition-card">
+            <h4>transmission water main</h4>
+            <p>A larger pipe that moves water across longer distances or between major parts of the water network. These mains typically carry higher volumes of water.</p>
+          </div>
+          <div class="definition-card">
+            <h4>distribution water main</h4>
+            <p>A local pipe that distributes water through neighborhoods and to service connections, buildings, hydrants, and other local users.</p>
+          </div>
+          <div class="definition-card">
+            <h4>backflow</h4>
+            <p>The unwanted reverse movement of water or contaminants into the drinking water system. Leaks, pressure drops, fire events, or earthquake damage can increase backflow risk if protective systems are overwhelmed.</p>
+          </div>
+        </div>
 
-      <h3>Risk rank</h3>
-      <p>
-        Risk rank orders pipes from highest to lowest predicted probability. A lower rank means the pipe is considered higher risk by the model.
-      </p>
+        <p>
+          Sprinklers, hydrants, and drinking water connections are all connected to the broader water
+          main system. If a main leaks or loses pressure, hydrants and sprinklers may have reduced
+          pressure during an emergency. A leak can also create water quality concerns if dirt,
+          debris, rust, or contaminants enter damaged infrastructure.
+        </p>
 
-      <h3>Pipe age</h3>
-      <p>
-        Pipe age is calculated from the pipe's installation year and the analysis year. The slider filters out pipes younger than the selected age.
-      </p>
+        <ul class="clean-list">
+          <li><strong>water quality issues:</strong> leaks can allow dirt, debris, rust, or contaminants to enter damaged infrastructure.</li>
+          <li><strong>backflow risk:</strong> structural damage or pressure changes can overwhelm backflow prevention systems.</li>
+          <li><strong>property damage:</strong> water leaks can damage roads, buildings, and private property.</li>
+          <li><strong>reduced fire protection:</strong> hydrants and sprinklers may have lower pressure during emergency response.</li>
+          <li><strong>higher costs:</strong> leaks can increase water loss, maintenance costs, and potentially bills.</li>
+          <li><strong>service interruptions:</strong> repairs may require water shutoffs, road work, or traffic disruption.</li>
+        </ul>
+      </section>
 
-      <h3>Material and lining</h3>
-      <p>
-        Material and lining material describe the physical pipe construction. These fields are included because different pipe types may have different leak patterns.
-      </p>
+      <section class="report-section">
+        <h3>3. Research Question and Goal</h3>
+        <div class="question-box">
+          <strong>research question</strong>
+          <p>Which water main pipe segments are predicted to leak in the next year?</p>
+        </div>
+        <p>
+          The goal was to build a model using publicly available data that estimates the probability
+          that each pipe segment will leak in the following year. The model is best interpreted as a
+          risk-prioritization tool, not as a guarantee that a specific pipe will or will not leak.
+        </p>
+      </section>
 
-      <h3>Water main type</h3>
-      <p>
-        Water main type separates distribution and transmission mains when that source information is available.
-      </p>
+      <section class="report-section">
+        <h3>4. Data Sources</h3>
+        <p>
+          The project used public City of Vancouver API datasets. The main sources were water
+          distribution mains, water transmission mains, historical 311 water leak service requests,
+          and recent 311 water leak service requests.
+        </p>
 
-      <h3>Important limitation</h3>
-      <p>
-        This model is intended for risk screening and prioritization. It should not be treated as a guaranteed prediction that a specific pipe will or will not leak.
-      </p>
+        <div class="data-table">
+          <div class="data-row data-header"><div>dataset</div><div>purpose</div></div>
+          <div class="data-row"><div>water distribution mains</div><div>local water main pipe segments used for neighborhood-level water delivery.</div></div>
+          <div class="data-row"><div>water transmission mains</div><div>larger pipe segments used to move water through major parts of the network.</div></div>
+          <div class="data-row"><div>311 water leak requests, 2009–2021</div><div>historical public service requests related to water leak cases.</div></div>
+          <div class="data-row"><div>311 water leak requests, 2021–present</div><div>recent water leak service requests used to extend the leak history.</div></div>
+        </div>
+
+        <pre><code>DATASETS = [
+    {"table_name": "raw_distribution_mains", "url": "...water-distribution-mains..."},
+    {"table_name": "raw_transmission_mains", "url": "...water-transmission-mains..."},
+    {"table_name": "raw_311_water_leaks_2009_2021", "url": "...3-1-1-service-requests-2009-2021..."},
+    {"table_name": "raw_311_water_leaks_2021_present", "url": "...3-1-1-service-requests..."}
+]</code></pre>
+      </section>
+
+      <section class="report-section">
+        <h3>5. Data Cleaning and Transformation</h3>
+        <p>
+          The transmission and distribution water main datasets were unioned into one water main
+          table. The 311 datasets were also unioned into one leak table. The 311 timestamps were
+          simplified to leak year to make the data easier to join, manipulate, and train on.
+        </p>
+        <p>
+          Each water main was associated with a pipe ID. The leak reports were matched to water mains
+          using coordinate data and GIS functions. This created a link between point-like 311 leak
+          reports and line-like pipe geometries.
+        </p>
+
+        <pre><code>-- example spatial workflow
+CREATE INDEX idx_pipe_geom
+ON main
+USING GIST (geom_line_utm);
+
+CREATE INDEX idx_leak_geom
+ON leakdata
+USING GIST (geom_point_utm);</code></pre>
+
+        <p>
+          The final dataset was transformed so that each pipe had one row for each year from 2015 to
+          2026. A target column was created to represent whether the pipe leaked in the following
+          year.
+        </p>
+
+        <pre><code>CASE
+  WHEN LEAD(leaked_that_year) OVER (
+    PARTITION BY pipe_id
+    ORDER BY analysis_year
+  ) = 1
+  THEN 1
+  ELSE 0
+END AS leaks_next_year</code></pre>
+      </section>
+
+      <section class="report-section">
+        <h3>6. Model Training</h3>
+        <p>
+          The model was split by year rather than randomly. This matters because the task is
+          time-dependent: the model should learn from past pipe-year records and predict future leak
+          risk.
+        </p>
+
+        <div class="split-grid">
+          <div><h4>training</h4><p>historical pipe-year rows used to fit the model.</p></div>
+          <div><h4>validation</h4><p>a later year used to tune thresholds and compare models.</p></div>
+          <div><h4>testing</h4><p>a held-out year used to estimate final performance.</p></div>
+          <div><h4>scoring</h4><p>2025 pipe records scored to estimate 2026 leak risk.</p></div>
+        </div>
+
+        <p>
+          Multiple boosting models were tested, including XGBoost and CatBoost. Boosting models build
+          many decision trees in sequence, where each new tree attempts to improve on the previous
+          errors.
+        </p>
+
+        <div class="model-grid">
+          <div class="model-card"><h4>xgboost</h4><p>XGBoost is a strong model for structured tabular data and provided a useful comparison model for leak prediction.</p></div>
+          <div class="model-card"><h4>catboost</h4><p>CatBoost was useful because the dataset includes categorical variables such as material, lining material, and water main type. CatBoost produced the best overall result.</p></div>
+        </div>
+
+        <p>
+          Since leaks are rare, accuracy is not a good main metric. The evaluation therefore focused
+          on precision, recall, F1 score, ROC AUC, and especially PR AUC.
+        </p>
+
+        <div class="metric-grid">
+          <div><h4>precision</h4><p>Of the pipes predicted to leak, how many actually leaked?</p></div>
+          <div><h4>recall</h4><p>Of all pipes that actually leaked, how many did the model catch?</p></div>
+          <div><h4>f1 score</h4><p>A combined measure that balances precision and recall.</p></div>
+          <div><h4>pr auc</h4><p>Measures ranking quality for the rare leak class.</p></div>
+        </div>
+
+        <pre><code>model = CatBoostClassifier(
+    iterations=700,
+    learning_rate=0.05,
+    depth=6,
+    loss_function="Logloss",
+    eval_metric="PRAUC",
+    auto_class_weights="Balanced",
+    bootstrap_type="MVS",
+    random_seed=42
+)</code></pre>
+      </section>
+
+      <section class="report-section">
+        <h3>7. Model Results and Interpretation</h3>
+        <p>
+          CatBoost gave the best validation and testing results among the models tested. The final
+          model performed meaningfully better than a random baseline, but it is still imperfect
+          because water main leaks are rare and the public feature space is limited.
+        </p>
+
+        <div class="result-card">
+          <h4>final catboost test result</h4>
+          <div class="result-grid">
+            <div><span>precision</span><strong>6.33%</strong></div>
+            <div><span>recall</span><strong>27.70%</strong></div>
+            <div><span>f1 score</span><strong>10.31%</strong></div>
+            <div><span>pr auc</span><strong>0.0407</strong></div>
+            <div><span>roc auc</span><strong>0.7441</strong></div>
+            <div><span>pr auc lift</span><strong>~3.8×</strong></div>
+          </div>
+        </div>
+
+        <p>
+          The PR AUC baseline is approximately equal to the leak rate. The final model achieved a PR
+          AUC around 3.8 times higher than that baseline, which suggests that it learned meaningful
+          signal. However, precision remained low, meaning many predicted leaks were false positives.
+          This makes the model more useful for screening and prioritization than for definitive
+          yes/no decisions.
+        </p>
+      </section>
+
+      <section class="report-section">
+        <h3>8. Prediction and Visualization</h3>
+        <p>
+          After model selection, the CatBoost model was used to score the 2025 pipe-year records.
+          Since the target is next-year leak status, the 2025 rows are used to predict 2026 leak
+          risk.
+        </p>
+
+        <pre><code>scoring_df["leak_probability_next_year"] =
+    model.predict_proba(X_score)[:, 1]
+
+scoring_df["predicted_leak_next_year"] =
+    scoring_df["leak_probability_next_year"] >= best_threshold</code></pre>
+
+        <p>
+          The predictions were saved to a GeoJSON file so the original pipe line geometries could be
+          displayed on the map. The final dashboard was built with HTML, CSS, JavaScript, Leaflet,
+          and GitHub Pages.
+        </p>
+      </section>
+
+      <section class="report-section">
+        <h3>9. Discussion and Future Improvements</h3>
+        <p>
+          The model shows useful predictive signal, but performance is limited by available features,
+          label quality, and the difficulty of predicting rare infrastructure failures.
+        </p>
+
+        <ul class="clean-list">
+          <li><strong>richer leak history:</strong> include exact dates, repeated reports, seasonal effects, and repair timing.</li>
+          <li><strong>local spatial features:</strong> count nearby historical leaks within 50m, 100m, or 250m.</li>
+          <li><strong>better labels:</strong> remove ambiguous reports and filter matches by distance from the pipe.</li>
+          <li><strong>more context:</strong> add pressure zones, soil type, road work, traffic, weather, or maintenance records if available.</li>
+          <li><strong>probability calibration:</strong> improve how well predicted probabilities match real-world leak rates.</li>
+          <li><strong>operational testing:</strong> compare predictions against inspection capacity and maintenance priorities.</li>
+        </ul>
+
+        <p>
+          Overall, the model should be interpreted as an early-warning and prioritization tool. It
+          can help identify elevated-risk pipe segments, but infrastructure decisions should combine
+          model output with engineering judgment and field inspection.
+        </p>
+      </section>
     </div>
   </div>
 
