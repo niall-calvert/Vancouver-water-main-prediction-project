@@ -724,10 +724,10 @@ code {
           </div>
           <div class="definition-card">
             <h4>Distribution Water Main</h4>
-            <p>A local pipe that distributes water through neighborhoods and to service connections, buildings, hydrants, and other local users.</p>
+            <p>A local pipe that distributes water through neighbourhoods and to service connections, buildings, hydrants, and other local users.</p>
           </div>
           <div class="definition-card">
-            <h4>backflow</h4>
+            <h4>Backflow</h4>
             <p>The unwanted reverse movement of water or contaminants into the drinking water system. Backflow preventers are implemented in every sprinkler system since pressure drops from sprinklers activating. Water in sprinkler systems are extremey dirty since they sit for many years inside the pipes. Leaks, pressure drops, fire events, or earthquake damage can increase backflow risk if protective systems are overwhelmed.</p>
           </div>
         </div>
@@ -771,7 +771,7 @@ code {
 
         <div class="data-table">
           <div class="data-row data-header"><div>dataset</div><div>purpose</div></div>
-          <div class="data-row"><div>water distribution mains</div><div>local water main pipe segments used for neighborhood-level water delivery.</div></div>
+          <div class="data-row"><div>water distribution mains</div><div>local water main pipe segments used for neighbourhood level water delivery.</div></div>
           <div class="data-row"><div>water transmission mains</div><div>larger pipe segments used to move water through major parts of the network.</div></div>
           <div class="data-row"><div>311 water leak requests, 2009–2021</div><div>historical public service requests related to water leak cases.</div></div>
           <div class="data-row"><div>311 water leak requests, 2021–present</div><div>recent water leak service requests used to extend the leak history.</div></div>
@@ -882,14 +882,14 @@ END AS leaks_next_year</code></pre>
         </p>
       
         <div class="result-card">
-          <h4>final catboost test result</h4>
+          <h4>Final catboost test result</h4>
           <div class="result-grid">
-            <div><span>precision</span><strong>6.33%</strong></div>
-            <div><span>recall</span><strong>27.70%</strong></div>
-            <div><span>f1 score</span><strong>10.31%</strong></div>
-            <div><span>pr auc</span><strong>0.0407</strong></div>
-            <div><span>roc auc</span><strong>0.7441</strong></div>
-            <div><span>pr auc lift</span><strong>~3.8×</strong></div>
+            <div><span>Precision</span><strong>6.33%</strong></div>
+            <div><span>Recall</span><strong>27.70%</strong></div>
+            <div><span>F1 score</span><strong>10.31%</strong></div>
+            <div><span>PR AUC</span><strong>0.0407</strong></div>
+            <div><span>ROC auc</span><strong>0.7441</strong></div>
+            <div><span>PR AUC lift</span><strong>~3.8×</strong></div>
           </div>
         </div>
       
@@ -902,11 +902,11 @@ END AS leaks_next_year</code></pre>
         </p>
       
         <div class="result-card">
-          <h4>top-k risk ranking diagnostic</h4>
+          <h4>Top k risk ranking diagnostic</h4>
           <p>
             The model is more useful as a risk ranking tool than as a strict yes no classifier.
             The table below shows how many actual leaks were found among the highest risk pipes
-            in the held-out test year.
+            in the held out test year.
           </p>
       
           <div class="topk-table">
@@ -980,7 +980,7 @@ END AS leaks_next_year</code></pre>
           In the held out test year, the baseline leak rate was only about 1.07%. This means that randomly
           selecting 1,000 pipes would be expected to find roughly 11 leaks. The model's top 1,000
           highest risk pipes contained 64 actual leaks, which is about 5.95 times better than random
-          selection. The top 5,000 highest-risk pipes captured 288 of the 751 actual leaks, or 38.35% of
+          selection. The top 5,000 highest risk pipes captured 288 of the 751 actual leaks, or 38.35% of
           all leaks in the test year.
         </p>
       
@@ -1025,7 +1025,7 @@ scoring_df["predicted_leak_next_year"] =
           <li><strong>local spatial features:</strong> count nearby historical leaks within 50m, 100m, or 250m.</li>
           <li><strong>better labels:</strong> remove ambiguous reports and filter matches by distance from the pipe.</li>
           <li><strong>more context:</strong> add pressure zones, soil type, road work, traffic, weather, or maintenance records if available.</li>
-          <li><strong>probability calibration:</strong> improve how well predicted probabilities match real-world leak rates.</li>
+          <li><strong>probability calibration:</strong> improve how well predicted probabilities match real world leak rates.</li>
           <li><strong>operational testing:</strong> compare predictions against inspection capacity and maintenance priorities.</li>
         </ul>
 
