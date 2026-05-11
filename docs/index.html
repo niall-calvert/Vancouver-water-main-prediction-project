@@ -546,6 +546,41 @@ code {
   font-size: 20px;
 }
 
+.topk-table {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.topk-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.topk-row:last-child {
+  border-bottom: none;
+}
+
+.topk-header {
+  background: var(--panel-soft);
+  color: var(--text);
+  font-weight: 700;
+  text-transform: none;
+}
+
+@media (max-width: 800px) {
+  .topk-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 800px) {
   .definition-grid,
   .model-grid,
@@ -859,7 +894,7 @@ END AS leaks_next_year</code></pre>
         </div>
       
         <p>
-          PR AUC is the area under the precision-recall curve, measuring how well a classifier ranks
+          PR AUC is the area under the precision recall curve, measuring how well a classifier ranks
           positive cases above negative cases across different thresholds. It is especially useful for
           imbalanced classification problems where the positive event is rare. The PR AUC baseline is
           approximately equal to the leak rate. The final model achieved a PR AUC around 3.8 times higher
@@ -869,8 +904,8 @@ END AS leaks_next_year</code></pre>
         <div class="result-card">
           <h4>top-k risk ranking diagnostic</h4>
           <p>
-            The model is more useful as a risk-ranking tool than as a strict yes/no classifier.
-            The table below shows how many actual leaks were found among the highest-risk pipes
+            The model is more useful as a risk ranking tool than as a strict yes no classifier.
+            The table below shows how many actual leaks were found among the highest risk pipes
             in the held-out test year.
           </p>
       
@@ -942,9 +977,9 @@ END AS leaks_next_year</code></pre>
         </div>
       
         <p>
-          In the held-out test year, the baseline leak rate was only about 1.07%. This means that randomly
+          In the held out test year, the baseline leak rate was only about 1.07%. This means that randomly
           selecting 1,000 pipes would be expected to find roughly 11 leaks. The model's top 1,000
-          highest-risk pipes contained 64 actual leaks, which is about 5.95 times better than random
+          highest risk pipes contained 64 actual leaks, which is about 5.95 times better than random
           selection. The top 5,000 highest-risk pipes captured 288 of the 751 actual leaks, or 38.35% of
           all leaks in the test year.
         </p>
@@ -956,12 +991,12 @@ END AS leaks_next_year</code></pre>
           certainty.
         </p>
       </section>
-      
+
       <section class="report-section">
         <h3>8. Prediction and Visualization</h3>
         <p>
-          After model selection, the CatBoost model was used to score the 2025 pipe-year records.
-          Since the target is next-year leak status, the 2025 rows are used to predict 2026 leak
+          After model selection, the CatBoost model was used to score the 2025 pipe year records.
+          Since the target is next year leak status, the 2025 rows are used to predict 2026 leak
           risk.
         </p>
 
@@ -995,8 +1030,8 @@ scoring_df["predicted_leak_next_year"] =
         </ul>
 
         <p>
-          Overall, the model should be interpreted as an early-warning and prioritization tool. It
-          can help identify elevated-risk pipe segments, but infrastructure decisions should combine
+          Overall, the model should be interpreted as an early warning and prioritization tool. It
+          can help identify elevated risk pipe segments, but infrastructure decisions should combine
           model output with engineering judgment and field inspection.
         </p>
       </section>
