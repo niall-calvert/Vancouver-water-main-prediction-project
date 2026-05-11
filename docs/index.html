@@ -124,7 +124,6 @@ body {
   margin: 0 0 8px;
   font-size: 15px;
   color: var(--text);
-  text-transform: lowercase;
 }
 
 .panel-subtitle {
@@ -150,7 +149,6 @@ body {
 .control label {
   font-size: 12px;
   color: var(--muted);
-  text-transform: lowercase;
 }
 
 .control select,
@@ -240,7 +238,6 @@ body {
 .about-card h2 {
   margin-top: 0;
   color: var(--accent);
-  text-transform: lowercase;
   letter-spacing: -0.04em;
 }
 
@@ -248,7 +245,6 @@ body {
   margin-top: 28px;
   color: var(--text);
   font-size: 15px;
-  text-transform: lowercase;
 }
 
 .about-card p {
@@ -372,7 +368,6 @@ body {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
-  text-transform: lowercase;
 }
 
 .hero-report h2 {
@@ -381,7 +376,6 @@ body {
   letter-spacing: -0.06em;
   margin: 0 0 14px;
   color: var(--accent);
-  text-transform: lowercase;
 }
 
 .hero-text {
@@ -399,7 +393,6 @@ body {
   color: var(--accent);
   font-size: 18px;
   margin-bottom: 14px;
-  text-transform: lowercase;
 }
 
 .report-section p {
@@ -459,7 +452,6 @@ body {
 .result-card h4 {
   margin: 0 0 8px;
   color: var(--text);
-  text-transform: lowercase;
 }
 
 .definition-card p,
@@ -483,7 +475,6 @@ body {
 
 .question-box strong {
   color: var(--accent);
-  text-transform: lowercase;
 }
 
 .data-table {
@@ -512,7 +503,6 @@ body {
   background: var(--panel-soft);
   color: var(--text);
   font-weight: 700;
-  text-transform: lowercase;
 }
 
 pre {
@@ -549,7 +539,6 @@ code {
   color: var(--muted);
   font-size: 12px;
   margin-bottom: 6px;
-  text-transform: lowercase;
 }
 
 .result-grid strong {
@@ -662,13 +651,13 @@ code {
           The data pipeline began by importing records from City of Vancouver API endpoints into a
           PostgreSQL database running inside Docker Desktop. Python was used to request the raw API
           data and store each record as JSON, while SQL was used to join, filter, clean, and reshape
-          the datasets into a machine-learning-ready format.
+          the datasets into a machine learning ready format.
         </p>
         <p>
           The workflow included joining the transmission and distribution water main datasets,
           cleaning and combining 311 water leak reports, triangulating reported leak locations to
           nearby water mains with coordinate information, and transforming the final result into a
-          pipe-year dataset. The model was then trained using a time-based split, tested with
+          pipe year dataset. The model was then trained using a time based split, tested with
           multiple boosting algorithms, and exported to a GeoJSON file for visualization.
         </p>
         <div class="pipeline">
@@ -691,20 +680,20 @@ code {
 
         <div class="definition-grid">
           <div class="definition-card">
-            <h4>water main</h4>
+            <h4>Water Main</h4>
             <p>A pipe that carries treated water through the municipal water system. Water mains connect to service lines, buildings, hydrants, and other water infrastructure.</p>
           </div>
           <div class="definition-card">
-            <h4>transmission water main</h4>
+            <h4>Transmission Water Main</h4>
             <p>A larger pipe that moves water across longer distances or between major parts of the water network. These mains typically carry higher volumes of water.</p>
           </div>
           <div class="definition-card">
-            <h4>distribution water main</h4>
+            <h4>Distribution Water Main</h4>
             <p>A local pipe that distributes water through neighborhoods and to service connections, buildings, hydrants, and other local users.</p>
           </div>
           <div class="definition-card">
             <h4>backflow</h4>
-            <p>The unwanted reverse movement of water or contaminants into the drinking water system. Leaks, pressure drops, fire events, or earthquake damage can increase backflow risk if protective systems are overwhelmed.</p>
+            <p>The unwanted reverse movement of water or contaminants into the drinking water system. Backflow preventers are implemented in every sprinkler system since pressure drops from sprinklers activating. Water in sprinkler systems are extremey dirty since they sit for many years inside the pipes. Leaks, pressure drops, fire events, or earthquake damage can increase backflow risk if protective systems are overwhelmed.</p>
           </div>
         </div>
 
@@ -716,12 +705,12 @@ code {
         </p>
 
         <ul class="clean-list">
-          <li><strong>water quality issues:</strong> leaks can allow dirt, debris, rust, or contaminants to enter damaged infrastructure.</li>
-          <li><strong>backflow risk:</strong> structural damage or pressure changes can overwhelm backflow prevention systems.</li>
-          <li><strong>property damage:</strong> water leaks can damage roads, buildings, and private property.</li>
-          <li><strong>reduced fire protection:</strong> hydrants and sprinklers may have lower pressure during emergency response.</li>
-          <li><strong>higher costs:</strong> leaks can increase water loss, maintenance costs, and potentially bills.</li>
-          <li><strong>service interruptions:</strong> repairs may require water shutoffs, road work, or traffic disruption.</li>
+          <li><strong>Water quality issues:</strong> leaks can allow dirt, debris, rust, or contaminants to enter damaged infrastructure.</li>
+          <li><strong>Backflow risk:</strong> structural damage or pressure changes can overwhelm backflow prevention systems.</li>
+          <li><strong>Property damage:</strong> water leaks can damage roads, buildings, and private property.</li>
+          <li><strong>Reduced fire protection:</strong> hydrants and sprinklers may have lower pressure during emergency response.</li>
+          <li><strong>Higher costs:</strong> leaks can increase water loss, maintenance costs, and potentially bills.</li>
+          <li><strong>Service interruptions:</strong> repairs may require water shutoffs, road work, or traffic disruption.</li>
         </ul>
       </section>
 
@@ -733,8 +722,7 @@ code {
         </div>
         <p>
           The goal was to build a model using publicly available data that estimates the probability
-          that each pipe segment will leak in the following year. The model is best interpreted as a
-          risk-prioritization tool, not as a guarantee that a specific pipe will or will not leak.
+          that each pipe segment will leak in the following year. 
         </p>
       </section>
 
@@ -771,8 +759,8 @@ code {
         </p>
         <p>
           Each water main was associated with a pipe ID. The leak reports were matched to water mains
-          using coordinate data and GIS functions. This created a link between point-like 311 leak
-          reports and line-like pipe geometries.
+          using coordinate data and GIS functions. This created a link between point like 311 leak
+          reports and line like pipe geometries.
         </p>
 
         <pre><code>-- example spatial workflow
@@ -804,15 +792,15 @@ END AS leaks_next_year</code></pre>
         <h3>6. Model Training</h3>
         <p>
           The model was split by year rather than randomly. This matters because the task is
-          time-dependent: the model should learn from past pipe-year records and predict future leak
+          time dependent: the model should learn from past pipe year records and predict future leak
           risk.
         </p>
 
         <div class="split-grid">
-          <div><h4>training</h4><p>historical pipe-year rows used to fit the model.</p></div>
-          <div><h4>validation</h4><p>a later year used to tune thresholds and compare models.</p></div>
-          <div><h4>testing</h4><p>a held-out year used to estimate final performance.</p></div>
-          <div><h4>scoring</h4><p>2025 pipe records scored to estimate 2026 leak risk.</p></div>
+          <div><h4>Training</h4><p>historical pipe year rows used to fit the model.</p></div>
+          <div><h4>Validation</h4><p>a later year used to tune thresholds and compare models.</p></div>
+          <div><h4>Testing</h4><p>a held out year used to estimate final performance.</p></div>
+          <div><h4>Scoring</h4><p>2025 pipe records scored to estimate 2026 leak risk.</p></div>
         </div>
 
         <p>
@@ -822,8 +810,8 @@ END AS leaks_next_year</code></pre>
         </p>
 
         <div class="model-grid">
-          <div class="model-card"><h4>xgboost</h4><p>XGBoost is a strong model for structured tabular data and provided a useful comparison model for leak prediction.</p></div>
-          <div class="model-card"><h4>catboost</h4><p>CatBoost was useful because the dataset includes categorical variables such as material, lining material, and water main type. CatBoost produced the best overall result.</p></div>
+          <div class="model-card"><h4>Xgboost</h4><p>XGBoost is a strong model for structured tabular data and provided a useful comparison model for leak prediction.</p></div>
+          <div class="model-card"><h4>Catboost</h4><p>CatBoost was useful because the dataset includes categorical variables such as material, lining material, and water main type. CatBoost produced the best overall result.</p></div>
         </div>
 
         <p>
@@ -853,11 +841,11 @@ END AS leaks_next_year</code></pre>
       <section class="report-section">
         <h3>7. Model Results and Interpretation</h3>
         <p>
-          CatBoost gave the best validation and testing results among the models tested. The final
+          CatBoost gave the best validation and testing results among the models tested based on PR AUC. The final
           model performed meaningfully better than a random baseline, but it is still imperfect
           because water main leaks are rare and the public feature space is limited.
         </p>
-
+      
         <div class="result-card">
           <h4>final catboost test result</h4>
           <div class="result-grid">
@@ -869,16 +857,106 @@ END AS leaks_next_year</code></pre>
             <div><span>pr auc lift</span><strong>~3.8×</strong></div>
           </div>
         </div>
-
+      
         <p>
-          The PR AUC baseline is approximately equal to the leak rate. The final model achieved a PR
-          AUC around 3.8 times higher than that baseline, which suggests that it learned meaningful
-          signal. However, precision remained low, meaning many predicted leaks were false positives.
-          This makes the model more useful for screening and prioritization than for definitive
-          yes/no decisions.
+          PR AUC is the area under the precision-recall curve, measuring how well a classifier ranks
+          positive cases above negative cases across different thresholds. It is especially useful for
+          imbalanced classification problems where the positive event is rare. The PR AUC baseline is
+          approximately equal to the leak rate. The final model achieved a PR AUC around 3.8 times higher
+          than that baseline, which suggests that it learned meaningful signal.
+        </p>
+      
+        <div class="result-card">
+          <h4>top-k risk ranking diagnostic</h4>
+          <p>
+            The model is more useful as a risk-ranking tool than as a strict yes/no classifier.
+            The table below shows how many actual leaks were found among the highest-risk pipes
+            in the held-out test year.
+          </p>
+      
+          <div class="topk-table">
+            <div class="topk-row topk-header">
+              <div>inspection set</div>
+              <div>actual leaks found</div>
+              <div>precision@k</div>
+              <div>recall@k</div>
+              <div>lift over random</div>
+            </div>
+      
+            <div class="topk-row">
+              <div>top 100 pipes</div>
+              <div>9 of 751</div>
+              <div>9.00%</div>
+              <div>1.20%</div>
+              <div>8.37×</div>
+            </div>
+      
+            <div class="topk-row">
+              <div>top 250 pipes</div>
+              <div>23 of 751</div>
+              <div>9.20%</div>
+              <div>3.06%</div>
+              <div>8.56×</div>
+            </div>
+      
+            <div class="topk-row">
+              <div>top 500 pipes</div>
+              <div>32 of 751</div>
+              <div>6.40%</div>
+              <div>4.26%</div>
+              <div>5.95×</div>
+            </div>
+      
+            <div class="topk-row">
+              <div>top 1,000 pipes</div>
+              <div>64 of 751</div>
+              <div>6.40%</div>
+              <div>8.52%</div>
+              <div>5.95×</div>
+            </div>
+      
+            <div class="topk-row">
+              <div>top 2,500 pipes</div>
+              <div>164 of 751</div>
+              <div>6.56%</div>
+              <div>21.84%</div>
+              <div>6.10×</div>
+            </div>
+      
+            <div class="topk-row">
+              <div>top 5,000 pipes</div>
+              <div>288 of 751</div>
+              <div>5.76%</div>
+              <div>38.35%</div>
+              <div>5.36×</div>
+            </div>
+      
+            <div class="topk-row">
+              <div>top 10,000 pipes</div>
+              <div>353 of 751</div>
+              <div>3.53%</div>
+              <div>47.00%</div>
+              <div>3.28×</div>
+            </div>
+          </div>
+        </div>
+      
+        <p>
+          In the held-out test year, the baseline leak rate was only about 1.07%. This means that randomly
+          selecting 1,000 pipes would be expected to find roughly 11 leaks. The model's top 1,000
+          highest-risk pipes contained 64 actual leaks, which is about 5.95 times better than random
+          selection. The top 5,000 highest-risk pipes captured 288 of the 751 actual leaks, or 38.35% of
+          all leaks in the test year.
+        </p>
+      
+        <p>
+          This means the model is not perfect as a binary classifier, but it does provide a meaningful
+          ranking of pipe risk. In practice, this is useful because inspection and maintenance teams often
+          need to prioritize a limited number of pipe segments rather than classify every pipe with perfect
+          certainty.
         </p>
       </section>
-
+      
       <section class="report-section">
         <h3>8. Prediction and Visualization</h3>
         <p>
@@ -928,7 +1006,9 @@ scoring_df["predicted_leak_next_year"] =
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
-    const map = L.map("map").setView([49.25, -123.12], 12);
+    const map = L.map("map", {
+  attributionControl: false
+}).setView([49.25, -123.12], 12);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
       maxZoom: 20
